@@ -1,0 +1,23 @@
+#eval-heading {
+    text-align: left;
+}
+
+#eval-quiz {
+    display: none;
+}
+
+.eval {
+    padding: 10px;
+    padding-bottom: 0px;
+}
+
+* {
+    padding-bottom: 0px;
+}
+#eval-end {
+    display: none;
+}
+
+#eval-sent {
+    display: none;
+}
