@@ -23,6 +23,6 @@ Pull Request ( https://help.github.com/articles/using-pull-requests/ )
 
  Yehya:#7, #8
 
- Manny: #5, #6
+ Manny: #5
 
  Mohammed: #5
