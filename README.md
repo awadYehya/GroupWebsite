@@ -13,7 +13,7 @@ You don't need to do all of it
 ## LAB 5
 
  Yehya:
- Working on 
+#7, #8
 
  Manny:
  #5, #6
