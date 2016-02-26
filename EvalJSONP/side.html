@@ -19,37 +19,37 @@
 </div>
 </body>
 <script type="text/javascript">
-function getJSONP(url, handler) {
-if (url == null) {
-var cbnum = "cb" + getJSONP.counter++;
-var cbname = "getJSONP." + cbnum;
-if (url.indexOf("?") === -1) {
-    url += "?callback" + cbname;
-} else {
-        url += "&callback" + cbname;
-    }
-    var script = document.createElement("script");
-    getJSONP[cbnum] = function (response) {
-        try {
-        handler(response);
-    } finally {
-        delete getJSONP[cbnum];
-        script.parentNode.removeChild(script);
+    function getJSONP(url, handler) {
+        if (url == null) {
+            var cbnum = "cb" + getJSONP.counter++;
+            var cbname = "getJSONP." + cbnum;
+            if (url.indexOf("?") === -1) {
+                url += "?callback" + cbname;
+            } else {
+                url += "&callback" + cbname;
+            }
+            var script = document.createElement("script");
+            getJSONP[cbnum] = function (response) {
+                try {
+                    handler(response);
+                } finally {
+                    delete getJSONP[cbnum];
+                    script.parentNode.removeChild(script);
+                }
+            };
+            script.src = url;
+            document.body.appendChild(script);
         }
-    };
-    script.src = url;
-    document.body.appendChild(script);
-    }
     }
     var handlerNext, handlerPrev;
     getJSONP.counter = 0;
 
     function log(msg) {
-    console.log(msg);
+        console.log(msg);
     }
 
     var clone = function (obj) {
-    return JSON.parse(JSON.stringify(obj));
+        return JSON.parse(JSON.stringify(obj));
     };
     var startQuizButton = document.getElementById("Start");
     var nextQuizButton = document.getElementById("Next");
@@ -57,56 +57,56 @@ if (url.indexOf("?") === -1) {
     var submitQuizButton = document.getElementById("Submit");
     var emailQuizButton = document.getElementById("Email");
     $("#Start").click(function () {
-    getJSONP("/EvalTool/JSONP/next", handlerNext);
-    var qframe = parent.frames.cframe;
-    var quiz = qframe.quiz;
-    setTimeout(function () {
-            console.log("Qframe loaded");
         getJSONP("/EvalTool/JSONP/next", handlerNext);
-        // GET THE QUIZ FROM THE SERVER
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            var resonse = JSON.parse(xmlHttp.responseText);
-        _unmodified = JSON.parse(JSON.stringify(resonse.questions));
-        qframe.quiz.initQuestions(resonse.questions);
-        qframe.quiz.initUserID(resonse.userID);
-        qframe.quiz.start();
-        console.log("Got questions from server..");
+        var qframe = parent.frames.cframe;
+        var quiz = qframe.quiz;
+        setTimeout(function () {
+            console.log("Qframe loaded");
+            getJSONP("/EvalTool/JSONP/next", handlerNext);
+            // GET THE QUIZ FROM THE SERVER
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                    var resonse = JSON.parse(xmlHttp.responseText);
+                    _unmodified = JSON.parse(JSON.stringify(resonse.questions));
+                    qframe.quiz.initQuestions(resonse.questions);
+                    qframe.quiz.initUserID(resonse.userID);
+                    qframe.quiz.start();
+                    console.log("Got questions from server..");
                 }
             };
-        xmlHttp.open("GET", "/questions", true); // true for asynchronous
-        xmlHttp.send(null);
-    }, 300);
+            xmlHttp.open("GET", "/questions", true); // true for asynchronous
+            xmlHttp.send(null);
+        }, 300);
         qframe.location = "/EvalJSONP/eval.html";
     });
     nextQuizButton.onclick = function () {
         getJSONP("/EvalTool/JSONP/next", handlerNext);
         var qframe = parent.frames.cframe;
-    var quiz = qframe.quiz;
+        var quiz = qframe.quiz;
         quiz.nextQuestion();
         quiz.sendToServer();
     };
     prevQuizButton.onclick = function () {
-    getJSONP("/EvalTool/JSONP/previous", handlerPrev);
-    var qframe = parent.frames.cframe;
-    var quiz = qframe.quiz;
+        getJSONP("/EvalTool/JSONP/previous", handlerPrev);
+        var qframe = parent.frames.cframe;
+        var quiz = qframe.quiz;
         quiz.prevQuestion();
     };
     submitQuizButton.onclick = function () {
         var qframe = parent.frames.cframe;
-    var quiz = qframe.quiz;
-    if (nextQuizButton.value == "SUBMISSION") {
-    if (quiz.isAllSelected()) {
-        // if done with quiz
-        var sure = confirm("Are you sure you want to submit?");
-        if (sure) {
-            getJSONP("/EvalTool/JSONP/next", handlerNext);
-            quiz.end();
-        }
-    } else {
-        alert("You must complete all questions! Guess if you don't know!");
-        }
+        var quiz = qframe.quiz;
+        if (nextQuizButton.value == "SUBMISSION") {
+            if (quiz.isAllSelected()) {
+                // if done with quiz
+                var sure = confirm("Are you sure you want to submit?");
+                if (sure) {
+                    getJSONP("/EvalTool/JSONP/next", handlerNext);
+                    quiz.end();
+                }
+            } else {
+                alert("You must complete all questions! Guess if you don't know!");
+            }
         }
     };
     emailQuizButton.onclick = function () {

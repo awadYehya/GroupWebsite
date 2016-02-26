@@ -7,34 +7,36 @@
         Web Applications At PSU Behrend
     </title>
     <script type="text/javascript">
-    window.onload = function () {
-        var updateInterv = setInterval(updateClock, 1000);
-        updateClock();
-    }
-    function modifySideBar(node) {
-        getSideFrameDoc().body.appendChild(node);
-        //sDoc.body.style.backgroundColor = "red";
-    }
-    function clearSideBar() {
-        var body = getSideFrameDoc().body;
-        while (body && body.firstChild) body.removeChild(body.firstChild);
-    }
-    function getSideFrameDoc() {
-        var sDoc = getSideFrameWin();
-        if (sDoc.document) {sDoc = sDoc.document;}
-        return sDoc;
-    }
-    function getSideFrameWin() {
-        var sID = document.getElementById("sframe");
-        var sWin = (sID.contentWindow || sID.contentDocument);
-        return sWin;
-    }
+        window.onload = function () {
+            var updateInterv = setInterval(updateClock, 1000);
+            updateClock();
+        }
+        function modifySideBar(node) {
+            getSideFrameDoc().body.appendChild(node);
+            //sDoc.body.style.backgroundColor = "red";
+        }
+        function clearSideBar() {
+            var body = getSideFrameDoc().body;
+            while (body && body.firstChild) body.removeChild(body.firstChild);
+        }
+        function getSideFrameDoc() {
+            var sDoc = getSideFrameWin();
+            if (sDoc.document) {
+                sDoc = sDoc.document;
+            }
+            return sDoc;
+        }
+        function getSideFrameWin() {
+            var sID = document.getElementById("sframe");
+            var sWin = (sID.contentWindow || sID.contentDocument);
+            return sWin;
+        }
     </script>
 </head>
 <body>
-    <div id="navigationbar">
-        <p id="CLOCK">00:00 PM</p>
-        <a href="/"><img src="/ThreeRegion/logo.png" alt="webapplication logo"/></a>
+<div id="navigationbar">
+    <p id="CLOCK">00:00 PM</p>
+    <a href="/"><img src="/ThreeRegion/logo.png" alt="webapplication logo"/></a>
 
         <span class="topnavigationlink">
             <a href="about.html" target="cframe">About</a>
@@ -48,16 +50,16 @@
         <span class="topnavigationlink">
             <a href="/EvalJSONP/firstpage.html" target="cframe">Evaluation Tool</a>
         </span>
-    </div>
-    <div id="sidenavigation">
-        <iframe src="side.html" name = "sframe" id="sframe" frameborder="0" ></iframe>
-    </div>
-    <div id="content">
-        <iframe src="about.html" name = "cframe" id="cframe" frameborder="0" ></iframe>
-    </div>
-    <div id="pagefooter">
-        <hr>
-        <p id="footer">&copy;webapplication.psu.edu 2016 </p>
-    </div>
+</div>
+<div id="sidenavigation">
+    <iframe src="side.html" name="sframe" id="sframe" frameborder="0"></iframe>
+</div>
+<div id="content">
+    <iframe src="about.html" name="cframe" id="cframe" frameborder="0"></iframe>
+</div>
+<div id="pagefooter">
+    <hr>
+    <p id="footer">&copy;webapplication.psu.edu 2016 </p>
+</div>
 </body>
 </html>
