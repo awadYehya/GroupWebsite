@@ -43,6 +43,7 @@ window.quiz = (function () {
     var _quizPosLabel = "n/a";
     var _initialized = false;
     var _score = 0;
+    var _userID = null;
     // updates the label ex. 2/10
     var _updateLabelPos = function () {
         _quizPosLabel = (_currentQuestionIndex + 1) + "/" + _questions.length;
@@ -191,6 +192,12 @@ window.quiz = (function () {
         },
         getScore: function() {
             return _score;
+        },
+        initUserID: function(uid) {
+            _userID = uid;
+        },
+        getUserID: function () {
+            return _userID;
         }
     };
 })();
@@ -261,9 +268,10 @@ startQuizButton.onclick = function () {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            var questions = JSON.parse(xmlHttp.responseText);
-            _unmodified = clone(questions);
-            quiz.initQuestions(questions);
+            var resonse = JSON.parse(xmlHttp.responseText);
+            _unmodified = clone(resonse.questions);
+            quiz.initQuestions(resonse.questions);
+            quiz.initUserID(resonse.userID);
             quiz.start();
             console.log("Got questions from server..");
         }

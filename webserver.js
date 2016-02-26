@@ -120,11 +120,13 @@ var getScore = function (results) {
 // Sending the client the questions (WITH NO ANSWERS)
 app.get('/questions', function (req, res) {
     console.log("QUIZ: QUIZ STARTED");
-    var noAnswerQuestions = JSON.parse(JSON.stringify(allQuestions));
-    noAnswerQuestions.forEach(function (v) {
+    var response = {};
+    response.userID =  Math.floor(new Date() / 1000); // unique ID
+    response.questions = JSON.parse(JSON.stringify(allQuestions));
+    response.questions.forEach(function (v) {
         delete v.ansIndex
     });
-    res.send(noAnswerQuestions);
+    res.send(response);
 });
 
 var currentQuizState;
