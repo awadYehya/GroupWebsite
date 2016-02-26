@@ -1,5 +1,30 @@
+
+// Evaluation quiz client-side
+
+function getJSONP(url, handler) {
+    var cbnum = "cb" + getJSONP.counter++;
+    var cbname = "getJSONP." + cbnum;
+    if (url.indexOf("?") === -1) {
+        url += "?callback" + cbname;
+    } else {
+        url += "&callback" + cbname;
+    }
+    var script = document.createElement("script");
+    getJSONP[cbnum] = function(response) {
+        try {
+            handler(response);
+        } finally {
+            delete getJSONP[cbnum];
+            script.parentNode.removeChild(script);
+        }
+    };
+    script.src = url;
+    document.body.appendChild(script);
+}
+getJSONP.counter = 0;
+
 function log(msg) {
-    //    console.log(msg);
+    console.log(msg);
 }
 
 var clone = function (obj) {
@@ -146,7 +171,8 @@ window.quiz = (function () {
             localStorage.clear();
             this.initQuestions(_unmodified);
         },
-        /* These can be set by users like onClick */
+        /* EVENT VARS! */
+        /* These can be set by users, they're like onClick */
         onLastQuestion: function () {},
         // When user naviagtes to first question
         onFirstQuestion: function () {},
@@ -156,14 +182,15 @@ window.quiz = (function () {
         onEndQuiz: function () {},
         // When the user navigates to a middle question.
         onMiddleQuestion: function () {},
-        // Draws/Shows the question
-        // replaced by user
+        /* Draws/Shows the question */
+        // needs to be set by the user
         showQuestion: function (qs, num) {},
+        /* MANAGE SCORE */
         setScore: function (scr) {
-            this._score = scr;
+            _score = scr;
         },
         getScore: function() {
-            return this._score;
+            return _score;
         }
     };
 })();

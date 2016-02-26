@@ -15,7 +15,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
 app.set("jsonp callback", true);
 
 app.get('/', function (req, res) {
@@ -51,7 +50,7 @@ app.get('/clock.js', function (req, res) {
     });
 });
 
-app.use('/EvalJSONP', express.static('EvalJSONP'));
+app.use('/EvalTool', express.static('EvalTool'));
 app.use('/EvalJSONP', express.static('EvalJSONP'));
 
 app.get('/ThreeRegion/*', threeregion);
@@ -71,12 +70,9 @@ function threeregion(req, res) {
 app.get('/CloudChat/*', ChatServer.gettool);
 app.get('/Syllabus/*', syllabus.gettool);
 
-
-app.listen(8080, function () {
-    console.log('Server running at http://127.0.0.1:8080/');
-});
-
-// QUIZ
+////////////
+/// QUIZ ///
+////////////
 
 var Question = function (question, option1, option2, option3, option4, answerNum) {
     return {
@@ -184,4 +180,33 @@ app.post('/sendmail', function(req, res) {
         '<p>'+mymail.subject+'</p>'+
         '<p>'+mymail.text+'</p>';
     res.send(msg);
+});
+
+
+////////////////////
+/// Handle JSONP ///
+////////////////////
+
+function handleJSONP(req, res) {
+    if (req.path === "/EvalTool/JSONP/next") {
+        updateAnswer(res.query.userID, req.query.answer);
+        sendJSONP(res, req.query.userID);
+    } else if (req.path === "/EvalTool/JSONP/last") {
+        updateAnswer(res.query.userID, req.query.answer);
+        sendJSONP(res, req.query.userID);
+    }
+}
+
+function sendJSONP(res, uid) {
+    var nextObject = {};
+    nextObject = getQuestionReady();
+    res.jsonp(JSON.stringify(nextObject));
+}
+
+////////////////////
+/// SERVER READY ///
+////////////////////
+
+app.listen(8080, function () {
+    console.log('Server running at http://127.0.0.1:8080/');
 });
