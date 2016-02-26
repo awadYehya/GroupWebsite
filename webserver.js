@@ -50,7 +50,8 @@ app.get('/clock.js', function (req, res) {
     });
 });
 
-app.use('/EvalTool', express.static('EvalTool'));
+app.use('/EvalJSONP', express.static('EvalJSONP'));
+app.use('/EvalJSONP', express.static('EvalJSONP'));
 
 app.get('/ThreeRegion/*', threeregion);
 

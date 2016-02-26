@@ -10,7 +10,7 @@ var clone = function (obj) {
 
 var _unmodified = []; // original questions at the start (without selected property)
 
-var quiz = (function () {
+window.quiz = (function () {
     /* PRIVATE */
     var _questions = [];
     var _currentQuestionIndex = -1;
