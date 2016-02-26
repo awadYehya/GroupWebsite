@@ -16,7 +16,7 @@ You don't need to do all of it
  Working on 
 
  Manny:
- Working on 
+ #5, #6
 
  Mohammed:
  Working on 
