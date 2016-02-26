@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
 app.set("jsonp callback", true);
 
 app.get('/', function (req, res) {
@@ -147,4 +148,40 @@ app.get('/submission', function (req, res) {
     var elsendo = {};
     elsendo.score = score;
     res.send(elsendo);
+});
+
+/////////////
+/// EMAIL ///
+/////////////
+
+var nodemailer = require('nodemailer');
+var smtpTransport = nodemailer.createTransport();
+
+app.post('/sendmail', function(req, res) {
+    var mymail = {};
+    mymail['from']=req.body.fname+"<"+req.body.femail+">"; // sender address
+    mymail['to']=req.body.tname+"<"+req.body.temail+">"; // comma separated list of receivers
+    mymail['subject']="Quiz score is: "+req.body.score;
+    mymail['text']=req.body.message;// plaintext body
+    smtpTransport.sendMail(mymail, function(error, info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log("Message sent: " + info.response);
+        }
+    });
+    mymail['to']=mymail['from'];
+    smtpTransport.sendMail(mymail, function(error, info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log("Message sent: " + info.response);
+        }
+    });
+    var msg = '<p>You sent the following message: </p>'+
+        '<p>'+mymail.from+'</p>'+
+        '<p>'+mymail.to+'</p>'+
+        '<p>'+mymail.subject+'</p>'+
+        '<p>'+mymail.text+'</p>';
+    res.send(msg);
 });

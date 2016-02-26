@@ -17,6 +17,7 @@ window.quiz = (function () {
     var _currentQuestion = {};
     var _quizPosLabel = "n/a";
     var _initialized = false;
+    var _score = 0;
     // updates the label ex. 2/10
     var _updateLabelPos = function () {
         _quizPosLabel = (_currentQuestionIndex + 1) + "/" + _questions.length;
@@ -158,6 +159,12 @@ window.quiz = (function () {
         // Draws/Shows the question
         // replaced by user
         showQuestion: function (qs, num) {},
+        setScore: function (scr) {
+            this._score = scr;
+        },
+        getScore: function() {
+            return this._score;
+        }
     };
 })();
 
@@ -189,6 +196,8 @@ quiz.onEndQuiz = function () {
             document.querySelector("#eval-score").innerHTML = score.score;
             document.querySelector("#eval-quiz").style.display = "none";
             document.querySelector("#eval-end").style.display = "inline";
+            document.querySelector("#email-score").value = score.score;
+            quiz.setScore(score.score);
         }
     };
     xmlHttp.open("GET", "/submission", true); // true for asynchronous 
@@ -295,7 +304,12 @@ for (var i = 0; i < quizRadioButtons.length; i += 1) {
     };
 };
 
+document.getElementById("email-form").addEventListener("submit", function () {
+    document.querySelector("#eval-end").style.display = "none";
+    document.querySelector("#eval-sent").style.display = "inline";
+});
+
 sendEmailButton.onclick = function () {
     document.querySelector("#eval-end").style.display = "none";
     document.querySelector("#eval-sent").style.display = "inline";
-}
+};

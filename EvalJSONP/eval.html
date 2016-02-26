@@ -38,7 +38,7 @@
     <div id="eval-end">
         <div id="contact">
             <h1>Send your score: <span id="eval-score">error</span></h1>
-            <form >
+            <form action="/sendmail" id="form-email" method="post">
                 <fieldset>
                     <label for="name">Your Name:</label>
                     <input type="text" id="fname" name="fname" placeholder="Enter your full name" />
@@ -48,16 +48,18 @@
                     <input type="text" id="tname" name="tname" placeholder="Enter recipients full name" />
                     <br>
                     <label for="email">Your Email:</label>
-                    <input type="email" id="temail" name="temail" placeholder="Enter recipients email address" />
+                    <input type="email" id="temail" name="femail" placeholder="Enter recipients email address" />
                     <br>
                     <label for="email">Instructor Email:</label>
                     <input type="email" id="iemail" name="temail" placeholder="Enter recipients email address" />
                     <br>
+                    <input type="hidden" id="email-score" name="score" />
                     <hr>
                     <label for="message">Note:</label>
                     <br>
                     <textarea id="message" name="message" placeholder="Enter note" rows="5" cols="80"></textarea>
                     <br>
+                    <input type="submit" value="Send message" />
                 </fieldset>
             </form>
             <button id="button-send-email" class="button-primary">SEND MESSAGE</button>
