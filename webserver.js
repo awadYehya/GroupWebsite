@@ -115,7 +115,7 @@ var getScore = function (results) {
         }
     }
     return score;
-}
+};
 
 // Sending the client the questions (WITH NO ANSWERS)
 app.get('/questions', function (req, res) {

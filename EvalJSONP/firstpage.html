@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var sideFrameWin = parent.document.getElementById("sframe").contentWindow;
+            sideFrameWin.location = "/EvalJSONP/side.html";
+        };
+    </script>
+</head>
+<body>
+<h1 class="heading">Instructions</h1>
+<p id="instruction">
+    Welcome to the quiz section of this website. You will be tested on your JavaScript knowledge!
+    <br>
+    <br>
+    <br>
+    Click "Start" in the side panel on the left to begin!
+</p>
+</body>
+</html>
