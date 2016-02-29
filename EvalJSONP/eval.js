@@ -1,4 +1,3 @@
-
 // Evaluation quiz client-side
 
 function getJSONP(url, handler) {
@@ -10,7 +9,7 @@ function getJSONP(url, handler) {
         url += "&callback" + cbname;
     }
     var script = document.createElement("script");
-    getJSONP[cbnum] = function(response) {
+    getJSONP[cbnum] = function (response) {
         try {
             handler(response);
         } finally {
@@ -43,7 +42,7 @@ window.quiz = (function () {
     var _quizPosLabel = "n/a";
     var _initialized = false;
     var _score = 0;
-    var _userID = null;
+    var _userID = 0;
     // updates the label ex. 2/10
     var _updateLabelPos = function () {
         _quizPosLabel = (_currentQuestionIndex + 1) + "/" + _questions.length;
@@ -169,35 +168,38 @@ window.quiz = (function () {
         },
         // Clears stored selections
         clearLocalStorage: function () {
-        localStorage.clear();
-        this.initQuestions(_unmodified);
-    },
-    /* EVENT VARS! */
-    /* These can be set by users, they're like onClick */
-    onLastQuestion: function () {},
-    // When user naviagtes to first question
-    onFirstQuestion: function () {},
-    // When the quiz is started
-    onStartQuiz: function () {},
-    // When the quiz ends
-    onEndQuiz: function () {},
-    // When the user navigates to a middle question.
-    onMiddleQuestion: function () {},
-    /* Draws/Shows the question */
-    // needs to be set by the user
-    showQuestion: function (qs, num) {},
-    /* MANAGE SCORE */
-    setScore: function (scr) {
-        _score = scr;
-    },
-    getScore: function() {
+            localStorage.clear();
+            this.initQuestions(_unmodified);
+        },
+        /* EVENT VARS! */
+        /* These can be set by users, they're like onClick */
+        onLastQuestion: function () {},
+        // When user naviagtes to first question
+        onFirstQuestion: function () {},
+        // When the quiz is started
+        onStartQuiz: function () {},
+        // When the quiz ends
+        onEndQuiz: function () {},
+        // When the user navigates to a middle question.
+        onMiddleQuestion: function () {},
+        /* Draws/Shows the question */
+        // needs to be set by the user
+        showQuestion: function (qs, num) {},
+        /* MANAGE SCORE */
+        setScore: function (scr) {
+            _score = scr;
+        },
+        getScore: function () {
             return _score;
         },
-        initUserID: function(uid) {
-            _userID = uid;
+        initUserID: function () {
+            this._userID += 1;
         },
         getUserID: function () {
-            return _userID;
+            return this._userID;
+        },
+        setUserID: function (uid, hiddenElement) {
+            hiddenElement.value = uid;
         }
     };
 })();
@@ -206,24 +208,38 @@ window.quiz = (function () {
 
 var startQuizButton = document.querySelector("#button-start");
 var nextQuizButton = document.querySelector("#button-next");
-    var prevQuizButton = document.querySelector("#button-previous");
-    var saveSelectionsButton = document.querySelector("#button-save");
-    var clearSavedSelectionsButton = document.querySelector("#button-clear");
-    var quizRadioButtons = document.querySelectorAll("#quiz-form > input[type='radio']");
-    var sendEmailButton = document.querySelector("#button-send-email");
-    startQuizButton.style.display = "none";
-    nextQuizButton.style.display = "none";
-    prevQuizButton.style.display = "none";
-    saveSelectionsButton.style.display = "none";
+var prevQuizButton = document.querySelector("#button-previous");
+var saveSelectionsButton = document.querySelector("#button-save");
+var clearSavedSelectionsButton = document.querySelector("#button-clear");
+var quizRadioButtons = document.querySelectorAll("#quiz-form > input[type='radio']");
+var sendEmailButton = document.querySelector("#button-send-email");
+startQuizButton.style.display = "none";
+nextQuizButton.style.display = "none";
+prevQuizButton.style.display = "none";
+saveSelectionsButton.style.display = "none";
 clearSavedSelectionsButton.style.display = "none";
 sendEmailButton.style.display = "none";
 
 // When the quiz starts do..
 quiz.onStartQuiz = function () {
-var sframe = parent.frames.sframe;
-document.querySelector("#eval-start").style.display = "none";
-document.querySelector("#eval-quiz").style.display = "inline";
-sframe.document.getElementById("Email").disabled = true;
+    var sframe = parent.frames.sframe;
+    var startInstant = '' + parent.myIP + Date.now() + Math.floor((Math.random() * 2000) + 1);
+    console.log(startInstant);
+    parent.sessionStorage.userID = JSON.stringify(startInstant);
+    
+    var myForm = document.getElementById("eval-quiz");
+    myForm.setAttribute('target', 'cframe');
+    myForm.action = "/EvalTool/start";
+    
+    var hidden = document.createElement("input");
+    hidden.setAttribute("type", "hidden");
+    hidden.name = "userID";
+    hidden.value = parent.sessionStorage.userID;
+    myForm.appendChild(hidden);
+    myForm.removeChild(hidden);
+    document.querySelector("#eval-start").style.display = "none";
+    document.querySelector("#eval-quiz").style.display = "inline";
+    sframe.document.getElementById("Email").disabled = true;
 };
 
 // When the quiz ends do..
@@ -233,19 +249,19 @@ quiz.onEndQuiz = function () {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-        var score = JSON.parse(xmlHttp.responseText);
-        console.log(xmlHttp.responseText);
-    document.querySelector("#eval-score").innerHTML = score.score;
-    document.querySelector("#eval-quiz").style.display = "none";
-        document.querySelector("#eval-end").style.display = "inline";
-        document.querySelector("#email-score").value = score.score;
-    quiz.setScore(score.score);
-}
-    var sframe = parent.frames.sframe;
-    sframe.document.getElementById("Email").disabled = false;
-};
-xmlHttp.open("GET", "/submission", true); // true for asynchronous
-xmlHttp.send(null);
+            var score = JSON.parse(xmlHttp.responseText);
+            console.log(xmlHttp.responseText);
+            document.querySelector("#eval-score").innerHTML = score.score;
+            document.querySelector("#eval-quiz").style.display = "none";
+            document.querySelector("#eval-end").style.display = "inline";
+            document.querySelector("#email-score").value = score.score;
+            quiz.setScore(score.score);
+        }
+        var sframe = parent.frames.sframe;
+        sframe.document.getElementById("Email").disabled = false;
+    };
+    xmlHttp.open("GET", "/submission", true); // true for asynchronous
+    xmlHttp.send(null);
 };
 
 // This is what actually displays the question to the user.
@@ -253,19 +269,19 @@ quiz.showQuestion = function (qs, index) {
     log("Showing question: ");
     log(qs);
     var qnum = document.querySelector("#quiz-question-number");
-var qques = document.querySelector("#quiz-question");
-var qopts = document.querySelectorAll(".quiz-opt");
-var qlabelPos = document.querySelector("#label-quiz-position");
-var qform = document.querySelector("#quiz-form");
+    var qques = document.querySelector("#quiz-question");
+    var qopts = document.querySelectorAll(".quiz-opt");
+    var qlabelPos = document.querySelector("#label-quiz-position");
+    var qform = document.querySelector("#quiz-form");
 
-// RESET SELECTION
-qform.reset();
-// INJECT IT
-qnum.innerHTML = index + 1;
-qques.innerHTML = qs.q;
-for (var i = 0; i < qopts.length; i += 1) {
-    qopts[i].innerHTML = qs.options[i];
-}
+    // RESET SELECTION
+    qform.reset();
+    // INJECT IT
+    qnum.innerHTML = index + 1;
+    qques.innerHTML = qs.q;
+    for (var i = 0; i < qopts.length; i += 1) {
+        qopts[i].innerHTML = qs.options[i];
+    }
     qlabelPos.innerHTML = quiz.getLabelPos();
     if (typeof qs.selected == "number") {
         quizRadioButtons[qs.selected].checked = true;
@@ -314,32 +330,32 @@ clearSavedSelectionsButton.onclick = function () {
 };
 // On last questions
 quiz.onFirstQuestion = function () {
-var sframe = parent.frames.sframe;
-sframe.document.getElementById("Previous").disabled = true;
-sframe.document.getElementById("Submit").disabled = true;
-sframe.document.getElementById("Next").value = "NEXT";
-sframe.document.getElementById("Next").classList.add("button");
-sframe.document.getElementById("Next").classList.remove("button-primary");
+    var sframe = parent.frames.sframe;
+    sframe.document.getElementById("Previous").disabled = true;
+    sframe.document.getElementById("Submit").disabled = true;
+    sframe.document.getElementById("Next").value = "NEXT";
+    sframe.document.getElementById("Next").classList.add("button");
+    sframe.document.getElementById("Next").classList.remove("button-primary");
 };
 
 // On the middle question
 quiz.onMiddleQuestion = function () {
-var sframe = parent.frames.sframe;
-sframe.document.getElementById("Previous").disabled = false;
-sframe.document.getElementById("Submit").disabled = true;
-sframe.document.getElementById("Next").value = "NEXT";
-sframe.document.getElementById("Next").classList.add("button");
-sframe.document.getElementById("Next").classList.remove("button-primary");
+    var sframe = parent.frames.sframe;
+    sframe.document.getElementById("Previous").disabled = false;
+    sframe.document.getElementById("Submit").disabled = true;
+    sframe.document.getElementById("Next").value = "NEXT";
+    sframe.document.getElementById("Next").classList.add("button");
+    sframe.document.getElementById("Next").classList.remove("button-primary");
 };
 
 // When at the last question
 quiz.onLastQuestion = function () {
-var sframe = parent.frames.sframe;
-sframe.document.getElementById("Previous").disabled = false;
-sframe.document.getElementById("Submit").disabled = false;
-sframe.document.getElementById("Next").value = "SUBMISSION";
-sframe.document.getElementById("Next").classList.remove("button");
-sframe.document.getElementById("Next").classList.add("button-primary");
+    var sframe = parent.frames.sframe;
+    sframe.document.getElementById("Previous").disabled = false;
+    sframe.document.getElementById("Submit").disabled = false;
+    sframe.document.getElementById("Next").value = "SUBMISSION";
+    sframe.document.getElementById("Next").classList.remove("button");
+    sframe.document.getElementById("Next").classList.add("button-primary");
 };
 
 // Set onclicks for the radio buttons
