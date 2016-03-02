@@ -109,7 +109,7 @@ var getScore = function (results) {
     var score = 0;
     for (var i = 0; i < results.length; i += 1) {
         if (typeof results[i].selected === "number") {
-            if (results[i].selected+1 === allQuestions[i].ansIndex) {
+            if (results[i].selected + 1 === allQuestions[i].ansIndex) {
                 score++;
             }
         }
@@ -121,7 +121,6 @@ var getScore = function (results) {
 app.get('/questions', function (req, res) {
     console.log("QUIZ: QUIZ STARTED");
     var response = {};
-    response.userID =  Math.floor(new Date() / 1000); // unique ID
     response.questions = JSON.parse(JSON.stringify(allQuestions));
     response.questions.forEach(function (v) {
         delete v.ansIndex
@@ -129,23 +128,24 @@ app.get('/questions', function (req, res) {
     res.send(response);
 });
 
-var currentQuizState;
+var currentQuizState = {};
 
 // Sending
 app.post('/saveQuestions', function (req, res) {
-    currentQuizState = req.body;
-    console.log("QUIZ: SAVED CURRENT STATE");
+    currentQuizState[req.body.userID] = req.body.q;
+    console.log("QUIZ: SAVED CURRENT STATE OF USER " + req.body.userID);
     res.send(null);
 });
 
 // Receiving the final submission
-app.get('/submission', function (req, res) {
-    var score = getScore(currentQuizState);
-    console.log("QUIZ: FINAL SUBMISSION - SUBMITTED");
-    console.log("QUIZ: SCORE " + score);
-    var elsendo = {};
-    elsendo.score = score;
-    res.send(elsendo);
+app.post('/submission', function (req, res) {
+    var userID = req.body.userID;
+    console.log(req.body.userID);
+    var score = {};
+    score.score = getScore(currentQuizState[userID]);
+    console.log("QUIZ: FINAL SUBMISSION - SUBMITTED USER: " + userID);
+    console.log("QUIZ: SCORE " + score.score);
+    res.send(score);
 });
 
 /////////////
@@ -155,32 +155,32 @@ app.get('/submission', function (req, res) {
 var nodemailer = require('nodemailer');
 var smtpTransport = nodemailer.createTransport();
 
-app.post('/sendmail', function(req, res) {
+app.post('/sendmail', function (req, res) {
     var mymail = {};
-    mymail['from']=req.body.fname+"<"+req.body.femail+">"; // sender address
-    mymail['to']=req.body.tname+"<"+req.body.temail+">"; // comma separated list of receivers
-    mymail['subject']="Quiz score is: "+req.body.score;
-    mymail['text']=req.body.message;// plaintext body
-    smtpTransport.sendMail(mymail, function(error, info){
-        if(error){
+    mymail['from'] = req.body.fname + "<" + req.body.femail + ">"; // sender address
+    mymail['to'] = req.body.tname + "<" + req.body.temail + ">"; // comma separated list of receivers
+    mymail['subject'] = "Quiz score is: " + req.body.score;
+    mymail['text'] = req.body.message; // plaintext body
+    smtpTransport.sendMail(mymail, function (error, info) {
+        if (error) {
             console.log(error);
-        }else{
+        } else {
             console.log("Message sent: " + info.response);
         }
     });
-    mymail['to']=mymail['from'];
-    smtpTransport.sendMail(mymail, function(error, info){
-        if(error){
+    mymail['to'] = mymail['from'];
+    smtpTransport.sendMail(mymail, function (error, info) {
+        if (error) {
             console.log(error);
-        }else{
+        } else {
             console.log("Message sent: " + info.response);
         }
     });
-    var msg = '<p>You sent the following message: </p>'+
-        '<p>'+mymail.from+'</p>'+
-        '<p>'+mymail.to+'</p>'+
-        '<p>'+mymail.subject+'</p>'+
-        '<p>'+mymail.text+'</p>';
+    var msg = '<p>You sent the following message: </p>' +
+        '<p>' + mymail.from + '</p>' +
+        '<p>' + mymail.to + '</p>' +
+        '<p>' + mymail.subject + '</p>' +
+        '<p>' + mymail.text + '</p>';
     res.send(msg);
 });
 

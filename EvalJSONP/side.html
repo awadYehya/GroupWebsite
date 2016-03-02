@@ -1,22 +1,32 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <link href="/ThreeRegion/webhome.css" rel="stylesheet" type="text/css">
     <link href="/ThreeRegion/threeregion.css" rel="stylesheet" type="text/css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
+
 <body>
-<div id="headDiv" class="sideroot">
-    <form id="interact" onsubmit="return false;">
-        <fieldset>
-            <input type="submit" name="Start" id="Start" value="Start" /> <br><br>
-            <input type="submit" name="Next" id="Next" value="Next" /> <br><br>
-            <input type="submit" name="Previous" id="Previous" value="Previous" /> <br><br>
-            <input type="submit" name="Submit" id="Submit" value="Submit" /><br><br>
-            <input type="submit" name="Email" id="Email" value="Email"/>
-        </fieldset>
-    </form>
-</div>
+    <div id="headDiv" class="sideroot">
+        <form id="interact" onsubmit="return false;">
+            <fieldset>
+                <input type="submit" name="Start" id="Start" value="Start" />
+                <br>
+                <br>
+                <input type="submit" name="Next" id="Next" value="Next" />
+                <br>
+                <br>
+                <input type="submit" name="Previous" id="Previous" value="Previous" />
+                <br>
+                <br>
+                <input type="submit" name="Submit" id="Submit" value="Submit" />
+                <br>
+                <br>
+                <input type="submit" name="Email" id="Email" value="Email" />
+            </fieldset>
+        </form>
+    </div>
 </body>
 <script type="text/javascript">
     function getJSONP(url, handler) {
@@ -115,4 +125,5 @@
         qframe.document.forms.emailForm.submit();
     }
 </script>
+
 </html>

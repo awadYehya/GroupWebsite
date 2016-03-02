@@ -1,4 +1,3 @@
-
 // Evaluation quiz client-side
 
 function getJSONP(url, handler) {
@@ -10,7 +9,7 @@ function getJSONP(url, handler) {
         url += "&callback" + cbname;
     }
     var script = document.createElement("script");
-    getJSONP[cbnum] = function(response) {
+    getJSONP[cbnum] = function (response) {
         try {
             handler(response);
         } finally {
@@ -58,7 +57,7 @@ window.quiz = (function () {
         start: function () {
             if (_initialized) {
                 log("Started Quiz");
-                this.loadFromLocalStorage();
+                this.loadFromSessionStorage();
                 this.onStartQuiz();
             } else {
                 throw Error("Must initialize with a question set first!");
@@ -142,7 +141,7 @@ window.quiz = (function () {
             _currentQuestion.selected = parseInt(indx);
             _questions[_currentQuestionIndex].selected = parseInt(indx);
             log("Set selected: " + indx);
-            this.saveToLocalStorage();
+            this.saveToSessionStorage();
         },
         // gets 1/10 label ex.
         getLabelPos: function () {
@@ -153,17 +152,21 @@ window.quiz = (function () {
             var http = new XMLHttpRequest(); // new HttpRequest instance 
             http.open("POST", "/saveQuestions");
             http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            http.send(JSON.stringify(_questions));
+            var sendData = {
+                q: _questions,
+                userID: _userID
+            };
+            http.send(JSON.stringify(sendData));
         },
         // Save options to the page
-        saveToLocalStorage: function () {
-            localStorage.setItem('quiz-state', JSON.stringify(_questions));
+        saveToSessionStorage: function () {
+            sessionStorage.setItem('quiz-state', JSON.stringify(_questions));
         },
         // Loads selected options
-        loadFromLocalStorage: function () {
-            if (localStorage.getItem("quiz-state") !== null) {
+        loadFromSessionStorage: function () {
+            if (sessionStorage.getItem("quiz-state") !== null) {
                 log("Loaded selections from previous session...");
-                _questions = JSON.parse(localStorage.getItem("quiz-state"));
+                _questions = JSON.parse(sessionStorage.getItem("quiz-state"));
                 this.initQuestions(_questions);
             }
         },
@@ -174,24 +177,18 @@ window.quiz = (function () {
         },
         /* EVENT VARS! */
         /* These can be set by users, they're like onClick */
-        onLastQuestion: function () {
-        },
+        onLastQuestion: function () {},
         // When user naviagtes to first question
-        onFirstQuestion: function () {
-        },
+        onFirstQuestion: function () {},
         // When the quiz is started
-        onStartQuiz: function () {
-        },
+        onStartQuiz: function () {},
         // When the quiz ends
-        onEndQuiz: function () {
-        },
+        onEndQuiz: function () {},
         // When the user navigates to a middle question.
-        onMiddleQuestion: function () {
-        },
+        onMiddleQuestion: function () {},
         /* Draws/Shows the question */
         // needs to be set by the user
-        showQuestion: function (qs, num) {
-        },
+        showQuestion: function (qs, num) {},
         /* MANAGE SCORE */
         setScore: function (scr) {
             _score = scr;
@@ -199,8 +196,13 @@ window.quiz = (function () {
         getScore: function () {
             return _score;
         },
-        initUserID: function(uid) {
-            _userID = uid;
+        initUserID: function () {
+            if (window.sessionStorage.getItem("userID") == null) {
+                _userID = JSON.stringify(Math.floor(new Date() / 1000)); // generate new
+                window.sessionStorage.setItem("userID", _userID);
+            } else {
+                _userID = window.sessionStorage.getItem("userID");
+            }
         },
         getUserID: function () {
             return _userID;
@@ -250,8 +252,9 @@ quiz.onEndQuiz = function () {
         var sframe = parent.frames.sframe;
         sframe.document.getElementById("Email").disabled = false;
     };
-    xmlHttp.open("GET", "/submission", true); // true for asynchronous
-    xmlHttp.send(null);
+    xmlHttp.open("POST", "/submission"); // true for asynchronous
+    xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xmlHttp.send(JSON.stringify({userID: quiz.getUserID()}));
 };
 
 // This is what actually displays the question to the user.
@@ -264,9 +267,9 @@ quiz.showQuestion = function (qs, index) {
     var qlabelPos = document.querySelector("#label-quiz-position");
     var qform = document.querySelector("#quiz-form");
 
-// RESET SELECTION
+    // RESET SELECTION
     qform.reset();
-// INJECT IT
+    // INJECT IT
     qnum.innerHTML = index + 1;
     qques.innerHTML = qs.q;
     for (var i = 0; i < qopts.length; i += 1) {
@@ -286,7 +289,7 @@ startQuizButton.onclick = function () {
             var resonse = JSON.parse(xmlHttp.responseText);
             _unmodified = clone(resonse.questions);
             quiz.initQuestions(resonse.questions);
-            quiz.initUserID(resonse.userID);
+            quiz.initUserID(); // generate new id or get old
             quiz.start();
             console.log("Got questions from server..");
         }
